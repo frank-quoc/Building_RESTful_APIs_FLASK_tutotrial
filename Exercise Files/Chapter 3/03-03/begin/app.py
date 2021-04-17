@@ -9,7 +9,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'planets.db')
 
 
-db = SQLAlchemy(app)
+db = SQLAlchemy(app) # initializes the database
 
 
 @app.route('/')
@@ -43,6 +43,27 @@ def url_variables(name: str, age: int):
         return jsonify(message="Sorry " + name + ", you are not old enough."), 401
     else:
         return jsonify(message="Welcome " + name + ", you are old enough!")
+
+
+# DB MODELS
+class User(db.Model):
+    __tablename__ = "users"
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    email = Column(string, unique=True)
+    password = Column(string)
+
+
+class Planet(db.Model):
+    __tablename__ = 'planets'
+    planet_id = Column(Integer, primary_key=True)
+    planet_name = Column(String)
+    planet_type = Column(String)
+    home_star = Column(String)
+    mass = Column(Float)
+    radius = Column(Float)
+    distance = Column(Float)
 
 
 if __name__ == '__main__':
