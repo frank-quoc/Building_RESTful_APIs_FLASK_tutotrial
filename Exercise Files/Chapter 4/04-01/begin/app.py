@@ -103,6 +103,22 @@ def planets():
     return jsonify(result.data)
 
 
+@app.route('/register', methods=['POST'])
+def register():
+    email = request.form['email']
+    test = User.query.filter_by(email=email).first()
+    if test:
+        return jsonify(message="That email already exists"), 409
+    else:
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        password = request.form['password']
+        user = User(first_name=first_name, last_name=last_name, email=email, password=password)
+        db.session.add(user)
+        db.session.commit()
+        return jsonify(message='User created successfully'), 201
+
+
 # database models
 class User(db.Model):
     __tablename__ = 'users'
@@ -141,4 +157,4 @@ planets_schema = PlanetSchema(many=True)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

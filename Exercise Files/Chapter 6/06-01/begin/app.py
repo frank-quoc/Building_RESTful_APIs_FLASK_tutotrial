@@ -11,9 +11,12 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'planets.db')
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # change this IRL
-app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
-app.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
-app.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
+app.config['MAIL_SERVER']='smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = '3a6142930e4c82'
+app.config['MAIL_PASSWORD'] = '29e986caf6f483'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -167,7 +170,7 @@ def planet_details(planet_id: int):
 
 
 @app.route('/add_planet', methods=['POST'])
-@jwt_required
+@jwt_required()
 def add_planet():
     planet_name = request.form['planet_name']
     test = Planet.query.filter_by(planet_name=planet_name).first()
@@ -193,7 +196,7 @@ def add_planet():
 
 
 @app.route('/update_planet', methods=['PUT'])
-@jwt_required
+@jwt_required()
 def update_planet():
     planet_id = int(request.form['planet_id'])
     planet = Planet.query.filter_by(planet_id=planet_id).first()
@@ -206,6 +209,18 @@ def update_planet():
         planet.distance = float(request.form['distance'])
         db.session.commit()
         return jsonify(message="You updated a planet"), 202
+    else:
+        return jsonify(message="That planet does not exist"), 404
+
+
+@app.route('/remove_planet/<int:planet_id>', methods=['DELETE'])
+@jwt_required()
+def remove_planet(planet_id: int):
+    planet = Planet.query.filter_by(planet_id=planet_id).first()
+    if planet:
+        db.session.delete(planet)
+        db.session.commit()
+        return jsonify(message="You deleted a planet"), 202
     else:
         return jsonify(message="That planet does not exist"), 404
 

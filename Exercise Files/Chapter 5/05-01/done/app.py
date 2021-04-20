@@ -15,6 +15,8 @@ app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
 app.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
 app.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
 
+
+
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 jwt = JWTManager(app)

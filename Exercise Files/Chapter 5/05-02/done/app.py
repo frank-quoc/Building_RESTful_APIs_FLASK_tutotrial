@@ -10,10 +10,14 @@ from flask_mail import Mail, Message
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'planets.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'super-secret'  # change this IRL
-app.config['MAIL_SERVER'] = 'smtp.mailtrap.io'
-app.config['MAIL_USERNAME'] = os.environ['MAIL_USERNAME']
-app.config['MAIL_PASSWORD'] = os.environ['MAIL_PASSWORD']
+app.config['MAIL_SERVER']='smtp.mailtrap.io'
+app.config['MAIL_PORT'] = 2525
+app.config['MAIL_USERNAME'] = '3a6142930e4c82'
+app.config['MAIL_PASSWORD'] = '29e986caf6f483'
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
@@ -107,7 +111,7 @@ def url_variables(name: str, age: int):
 def planets():
     planets_list = Planet.query.all()
     result = planets_schema.dump(planets_list)
-    return jsonify(result.data)
+    return jsonify(result)
 
 
 @app.route('/register', methods=['POST'])
@@ -161,7 +165,7 @@ def planet_details(planet_id: int):
     planet = Planet.query.filter_by(planet_id=planet_id).first()
     if planet:
         result = planet_schema.dump(planet)
-        return jsonify(result.data)
+        return jsonify(result)
     else:
         return jsonify(message="That planet does not exist"), 404
 
@@ -229,4 +233,4 @@ planets_schema = PlanetSchema(many=True)
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
